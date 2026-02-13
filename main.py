@@ -6,24 +6,25 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
+load_dotenv()
+
 def registrar_log(mensagem):
     data_hora = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     texto = f"[{data_hora}] {mensagem}"
     print(texto)
-    with open("registro_robo.txt", "a", encoding="utf-8") as arquivo:
+    with open("registro_auto.txt", "a", encoding="utf-8") as arquivo:
         arquivo.write(texto + "\n")
 
-load_dotenv()
-
 def automacao_contratos_tlog():
-    registrar_log("--- INICIANDO AUTOMATIZAÇÃO ---")
+    registrar_log("--- INICIANDO AUTOMATIZAÇÃO (ARMAZENAGEM - 30 DIAS) ---")
     
     hoje = datetime.now()
+    
     data_alvo = hoje + timedelta(days=30)
     data_sql = data_alvo.strftime('%Y-%m-%d')
     data_br = data_alvo.strftime('%d/%m/%Y')
 
-    registrar_log(f"Data de referência: {data_br}")
+    registrar_log(f"Data de referência para vencimento: {data_br}")
 
     contratos = []
     try:
@@ -37,11 +38,14 @@ def automacao_contratos_tlog():
         cursor = conn.cursor()
         
         query = f"""
-            SELECT FILIAL, TERMINO
-            FROM CO_CONTRATO 
-            WHERE FILIAL IN (1, 4) 
-            AND CAST(TERMINO AS DATE) = '{data_sql}'
+            SELECT C.FILIAL, P.NOME, C.TERMINO
+            FROM CO_CONTRATO C
+            INNER JOIN MS_PESSOA P ON P.HANDLE = C.PESSOA
+            WHERE C.FILIAL IN (1, 4) 
+            AND C.TIPO = 10
+            AND CAST(C.TERMINO AS DATE) = '{data_sql}'
         """
+        
         cursor.execute(query)
         contratos = cursor.fetchall()
         conn.close()
@@ -51,7 +55,7 @@ def automacao_contratos_tlog():
         return
 
     if not contratos:
-        registrar_log("Nenhum contrato vence em 30 dias.")
+        registrar_log(f"Nenhum contrato vence em {data_br}.")
         return
 
     registrar_log(f"Encontrei {len(contratos)} contrato(s). Preparando envio...")
@@ -61,23 +65,33 @@ def automacao_contratos_tlog():
         senha_remetente = os.getenv('EMAIL_PASSWORD')
         
         lista_destinatarios = [
-            'suporte@grupotlog.com.br'
+            'suporte@grupotlog.com.br',
         ]
 
         lista_html = "<ul>"
         for c in contratos:
             nome_filial = "PATIO SJP" if c.FILIAL == 1 else "PATIO PNG"
-            lista_html += f"<li><b>Filial:</b> {nome_filial} | <b>Vencimento:</b> {data_br}</li>"
+            
+            # Formatação da data
+            if isinstance(c.TERMINO, str):
+                vencimento_str = c.TERMINO
+            elif c.TERMINO:
+                vencimento_str = c.TERMINO.strftime('%d/%m/%Y')
+            else:
+                vencimento_str = data_br
+
+            lista_html += f"<li><b>Cliente:</b> {c.NOME} | <b>Filial:</b> {nome_filial} | <b>Vencimento:</b> {vencimento_str}</li>"
+        
         lista_html += "</ul>"
 
         corpo_email = f"""
         <html>
         <body style="font-family: Arial, sans-serif;">
-            <h3 style="color: #c0392b;">⚠️ Alerta de Vencimento de Contrato</h3>
+            <h3 style="color: #c0392b;">📦 Alerta de Vencimento de Contrato (Armazenagem)</h3>
             <p>Olá, equipe.</p>
-            <p>O sistema identificou que os seguintes contratos vencem em <b>30 dias</b> ({data_br}):</p>
+            <p>Os seguintes contratos de ARMAZENAGEM vencem em <b>30 dias</b> ({data_br}):</p>
             {lista_html}
-            <p>Favor iniciar o processo de renovação ou baixa.</p>
+            <p>Favor verificar os trâmites para renovação.</p>
             <hr>
             <p style="font-size: 12px; color: gray;"><i>Mensagem automática - Sistema de Automação TLOG</i></p>
         </body>
@@ -87,7 +101,7 @@ def automacao_contratos_tlog():
         msg = MIMEMultipart()
         msg['From'] = email_remetente
         msg['To'] = ", ".join(lista_destinatarios)
-        msg['Subject'] = f"ALERTA: Contratos Vencendo em {data_br}"
+        msg['Subject'] = f"ALERTA: Contratos Armazenagem Vencendo em {data_br}"
         msg.attach(MIMEText(corpo_email, 'html'))
 
         server = smtplib.SMTP('smtp.office365.com', 587)
@@ -96,7 +110,7 @@ def automacao_contratos_tlog():
         server.sendmail(email_remetente, lista_destinatarios, msg.as_string())
         server.quit()
         
-        registrar_log("E-mail enviado com sucesso para a equipe!")
+        registrar_log("✅ E-mail enviado com sucesso!")
         
     except Exception as e:
         registrar_log(f"ERRO AO ENVIAR E-MAIL: {e}")

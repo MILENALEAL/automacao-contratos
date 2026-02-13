@@ -1,0 +1,22 @@
+[13/02/2026 09:10:40] --- INICIANDO ROBÔ ---
+[13/02/2026 09:10:41] Data de referência: 15/03/2026
+[13/02/2026 09:10:41] ERRO CRÍTICO NO BANCO: ('42S22', "[42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Invalid column name 'CLIENTE'. (207) (SQLExecDirectW)")
+[13/02/2026 09:17:59] --- INICIANDO AUTOMATIZAÇÃO ---
+[13/02/2026 09:17:59] Data de referência (vencimento): 15/03/2026
+[13/02/2026 09:18:00] ERRO NO BANCO: ('42S22', "[42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Invalid column name 'CLIENTE'. (207) (SQLExecDirectW)")
+[13/02/2026 09:19:28] --- INICIANDO AUTOMATIZAÇÃO ---
+[13/02/2026 09:19:28] Data de referência: 15/03/2026
+[13/02/2026 09:19:28] ERRO NO BANCO: ('22018', "[22018] [Microsoft][ODBC SQL Server Driver][SQL Server]Conversion failed when converting the varchar value 'ARMAZENAGEM' to data type int. (245) (SQLExecDirectW)")
+[13/02/2026 09:24:14] --- INICIANDO AUTOMATIZAÇÃO ---
+[13/02/2026 09:24:14] Data de referência: 15/03/2026
+[13/02/2026 09:24:17] Nenhum contrato vence em 30 dias.
+[13/02/2026 09:29:57] --- INICIANDO AUTOMATIZAÇÃO (FRETE - 1 ANO) ---
+[13/02/2026 09:29:57] Data de referência (vencimento): 13/02/2027
+[13/02/2026 09:29:57] Nenhum contrato de Frete vence em 13/02/2027.
+[13/02/2026 09:30:38] --- INICIANDO AUTOMATIZAÇÃO (FRETE - 1 ANO) ---
+[13/02/2026 09:30:38] Data de referência (vencimento): 13/02/2028
+[13/02/2026 09:30:38] Nenhum contrato de Frete vence em 13/02/2028.
+[13/02/2026 09:31:47] --- INICIANDO AUTOMATIZAÇÃO (FRETE - PRÓXIMOS 2 ANOS) ---
+[13/02/2026 09:31:47] Buscando contratos entre hoje e 13/02/2028
+[13/02/2026 09:31:47] Encontrei 5 contrato(s). Preparando envio...
+[13/02/2026 09:31:51] ✅ E-mail enviado com sucesso!

@@ -16,7 +16,7 @@ def registrar_log(mensagem):
         arquivo.write(texto + "\n")
 
 def automacao_contratos_tlog():
-    registrar_log("--- INICIANDO AUTOMATIZAÇÃO (ARMAZENAGEM - 30 DIAS) ---")
+    registrar_log("--- INICIANDO AUTOMATIZAÇÃO ---")
     
     hoje = datetime.now()
     
@@ -87,13 +87,13 @@ def automacao_contratos_tlog():
         corpo_email = f"""
         <html>
         <body style="font-family: Arial, sans-serif;">
-            <h3 style="color: #c0392b;">📦 Alerta de Vencimento de Contrato (Armazenagem)</h3>
+            <h3 style="color: #c0392b;">📦 Alerta de Vencimento de Contrato</h3>
             <p>Olá, equipe.</p>
-            <p>Os seguintes contratos de ARMAZENAGEM vencem em <b>30 dias</b> ({data_br}):</p>
+            <p>Os seguintes contratos vencem em <b>30 dias</b> ({data_br}):</p>
             {lista_html}
             <p>Favor verificar os trâmites para renovação.</p>
             <hr>
-            <p style="font-size: 12px; color: gray;"><i>Mensagem automática - Sistema de Automação TLOG</i></p>
+            <p style="font-size: 12px; color: gray;"><i>Mensagem automática - Para problemas contatar equipe da TI TLOG</i></p>
         </body>
         </html>
         """
@@ -101,7 +101,7 @@ def automacao_contratos_tlog():
         msg = MIMEMultipart()
         msg['From'] = email_remetente
         msg['To'] = ", ".join(lista_destinatarios)
-        msg['Subject'] = f"ALERTA: Contratos Armazenagem Vencendo em {data_br}"
+        msg['Subject'] = f"ALERTA: Contratos Vencendo em {data_br}"
         msg.attach(MIMEText(corpo_email, 'html'))
 
         server = smtplib.SMTP('smtp.office365.com', 587)
